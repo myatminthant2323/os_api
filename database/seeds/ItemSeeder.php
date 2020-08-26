@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Seeder;
 
-class CategorySeeder extends Seeder
+class ItemSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -13,7 +13,7 @@ class CategorySeeder extends Seeder
     {
         // one-to-many relationship with saveMany() method
       // Create 2 records of categories
-      factory(App\Category::class, 2)->create()->each(function ($category) {
+      factory(App\Item::class, 2)->create()->each(function ($item) {
           // Seed the relation with 3 subcategories
           $subcategories = factory(App\Subcategory::class, 3)->make();
           $category->subcategories()->saveMany($subcategories);

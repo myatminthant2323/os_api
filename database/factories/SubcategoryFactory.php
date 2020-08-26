@@ -24,7 +24,7 @@ $factory->define(Subcategory::class, function (Faker $faker) {
 
     return [
         'name' => $faker->name,
-        'category_id' => random_int(\DB::table('categories')->min('id'),\DB::table('categories')->max('id')),
+        'category_id' => factory(App\Category::class),
         // 'email' => $faker->unique()->safeEmail,
         // 'email_verified_at' => now(),
         // 'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password

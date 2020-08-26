@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Item;
 use Illuminate\Http\Request;
+use App\Http\Resources\ItemResource;
 
 class ItemController extends Controller
 {
@@ -16,7 +17,12 @@ class ItemController extends Controller
     public function index()
     {
         $items = Item::all();
-        return $items;
+        // return $items;
+        return response()->json([
+            "status" => "ok",
+            "totalResults" => count($items),
+            "items" => ItemResource::collection($items)
+        ]);
     }
 
     /**
@@ -27,7 +33,41 @@ class ItemController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Validation
+        $request->validate([
+            'codeno' => 'required',
+            'name' => 'required',
+            'photo' => 'required',
+            'price' => 'required',
+            'discount' => 'required',
+            'description' => 'required',
+            'brand' => 'required',
+            'subcategory' => 'required',
+
+        ]);
+
+        // File Upload
+        $imageName = time().'.'.$request->photo->extension();
+
+        $request->photo->move(public_path('backendtemplate/itemimg'),$imageName);
+        $myfile = 'backendtemplate/itemimg/'.$imageName;
+
+        // Store Data
+        $item = new Item;
+        $item->codeno = $request->codeno;
+        $item->name = $request->name;
+        $item->photo = $myfile;
+        $item->price = $request->price;
+        $item->discount = $request->discount;
+        $item->description = $request->description;
+        $item->brand_id = $request->brand;
+        $item->subcategory_id = $request->subcategory;
+
+        $item->save();
+
+
+        $status = 1;
+        return new ItemResource($item);
     }
 
     /**
@@ -39,7 +79,8 @@ class ItemController extends Controller
     public function show(Item $item)
     {
          
-        return $item;
+        // return $item;
+        return new ItemResource($item);
     }
 
     /**

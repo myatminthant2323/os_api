@@ -11,6 +11,11 @@ class BrandTableSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Brand::class, 5)->create();
+        
+
+        factory(App\Brand::class, 3)->create()->each(function ($brand) {
+            $items = factory(App\Item::class, 1)->make();
+            $brand->items()->saveMany($items);
+          });
     }
 }
