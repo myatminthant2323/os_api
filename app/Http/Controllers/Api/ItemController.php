@@ -140,7 +140,7 @@ class ItemController extends Controller
             
         }elseif($sid || $bid){
             if ($name){
-                $items = Item::where('subcategory_id',$sid)->where('name', 'LIKE', "%{$name}%")->orWhere('brand_id', $bid)->get();
+                $items = Item::where('subcategory_id',$sid)->orWhere('brand_id', $bid)->where('name', 'LIKE', "%{$name}%")->get();
             }else{
                 $items = Item::where('subcategory_id',$sid)->orWhere('brand_id', $bid)->get();
             }
