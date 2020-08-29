@@ -15,8 +15,8 @@ class ItemSeeder extends Seeder
       // Create 2 records of categories
       factory(App\Item::class, 2)->create()->each(function ($item) {
           // Seed the relation with 3 subcategories
-          $subcategories = factory(App\Subcategory::class, 3)->make();
-          $category->subcategories()->saveMany($subcategories);
+          // $subcategories = factory(App\Subcategory::class, 3)->make();
+          // $category->subcategories()->saveMany($subcategories);
       });
     }
 }

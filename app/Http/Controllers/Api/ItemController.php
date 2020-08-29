@@ -13,7 +13,7 @@ class ItemController extends Controller
 
 	public function __construct($value='') // authentication
 	{
-		$this->middleware('auth:api')->except('index'); // for api use ('auth:api')
+		$this->middleware('auth:api')->except('index','filter','search'); // for api use ('auth:api')
 	}
     /**
      * Display a listing of the resource.
@@ -110,5 +110,51 @@ class ItemController extends Controller
     public function destroy(Item $item)
     {
         //
+    }
+
+    public function filter($sid,$bid)
+    {
+        $items = array();
+        if ($sid && $bid){
+            $items = Item::where('subcategory_id',$sid)->where('brand_id', $bid)->get();
+        }else{
+            $items = Item::where('subcategory_id',$sid)->or_where('brand_id', $bid)->get();
+        }
+
+        // return new ItemResource($items);
+        return $items;
+    }
+
+    public function search(Request $request)
+    {
+        $items = array();
+        $sid = $request->get('sid');
+        $bid = $request->get('bid');
+        $name = $request->get('name');
+        if ($sid && $bid){
+            if ($name){
+                $items = Item::where('subcategory_id',$sid)->where('brand_id', $bid)->where('name', 'LIKE', "%{$name}%")->get();
+            }else{
+                $items = Item::where('subcategory_id',$sid)->where('brand_id', $bid)->get();
+            }
+            
+        }elseif($sid || $bid){
+            if ($name){
+                $items = Item::where('subcategory_id',$sid)->where('name', 'LIKE', "%{$name}%")->orWhere('brand_id', $bid)->get();
+            }else{
+                $items = Item::where('subcategory_id',$sid)->orWhere('brand_id', $bid)->get();
+            }
+            
+        }else{
+            if ($name){
+                $items = Item::where('name', 'LIKE', "%{$name}%")->get();
+            }else{
+                $items = Item::all();
+            }
+            
+        }
+
+        // return new ItemResource($items);
+        return $items;
     }
 }

@@ -26,6 +26,12 @@ Route::apiresource('items','Api\ItemController');
 
 Route::apiresource('users','Api\UserController');
 
+
+Route::get('filter_item/{sid}/{bid}','Api\ItemController@filter')->name('filter_item');
+
+Route::get('search','Api\ItemController@search')->name('search'); // to filter struct custom function
+
+
 // make:controller Api\BrandController --api --model=Brand
 
 // --api (not include create/edit)
