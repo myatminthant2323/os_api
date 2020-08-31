@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Item;
+use App\Subcategory;
+use App\Brand;
 use Illuminate\Http\Request;
 use App\Http\Resources\ItemResource;
 
@@ -13,7 +15,7 @@ class ItemController extends Controller
 
 	public function __construct($value='') // authentication
 	{
-		$this->middleware('auth:api')->except('index','filter','search'); // for api use ('auth:api')
+		$this->middleware('auth:api')->except('index','filter','search','search_by_name'); // for api use ('auth:api')
 	}
     /**
      * Display a listing of the resource.
@@ -23,6 +25,7 @@ class ItemController extends Controller
     public function index()
     {
         $items = Item::all();
+        dd($items);
         // return $items;
         return response()->json([
             "status" => "ok",
@@ -125,10 +128,132 @@ class ItemController extends Controller
         return $items;
     }
 
+    public function search_by_name(Request $request)
+    {
+        $exit = true;
+        $items = array();
+        $item = $request->query('item');
+        $subcategory = $request->query('subcategory');
+        // dd($subcategory);
+        $brand = $request->query('brand');
+
+        $brands = Brand::where('name', 'LIKE', '%'.$brand.'%')->get();
+        $subcategories = Subcategory::where('name', 'LIKE', '%'.$subcategory.'%')->get();
+        $query = Item::query();
+        if($subcategory){
+            // dd($subcategories);
+            if(count($subcategories)>0){
+                // dd($subcategories);
+                foreach ($subcategories as $s_key => $s_value) {
+                    // dd($value);
+                    // dd($brands);
+                    if($brand){
+                        if(count($brands)>0){
+                            foreach ($brands as $b_key => $b_value) {
+                                if($s_key == 0 && $b_key == 0){
+                                    $query->where('subcategory_id', $s_value->id);
+                                }else{
+                                    $query->orWhere('subcategory_id', $s_value->id);
+                                }
+                                $query->where('brand_id', $b_value->id);
+                                if ($item) {
+                                    $query->where('name', 'LIKE', '%'.$item.'%');
+                                }
+                            }
+                        }else{
+                            $exit = false;
+                        }
+                    }
+                    if($s_key == 0){
+                        $query->where('subcategory_id', $s_value->id);
+                    }else{
+                        $query->orWhere('subcategory_id', $s_value->id);
+                    }
+
+                    if ($item) {
+                        $query->where('name', 'LIKE', '%'.$item.'%');
+                    }
+                    
+                    
+                }
+            }
+        }
+
+        ///////////////////End Subcategory/////////////////////////
+
+
+        if($brand){
+            // dd($subcategories);
+            if(count($brands)>0){
+                // dd($subcategories);
+                foreach ($brands as $b_key => $b_value) {
+                    // dd($value);
+                    // dd($brands);
+
+                    // dd(count($subcategories));
+                    if($subcategory){
+                        if(count($subcategories)>0){
+                            foreach ($subcategories as $s_key => $s_value) {
+                                if($b_key == 0 && $s_key == 0){
+                                    $query->where('brand_id', $b_value->id);
+                                }else{
+                                    $query->orWhere('brand_id', $b_value->id);
+                                }
+                                $query->where('subcategory_id', $s_value->id);
+                                if ($item) {
+                                    $query->where('name', 'LIKE', '%'.$item.'%');
+                                }
+                            }
+                        }else{
+                            $exit = false;
+                        }
+                    }else{
+                        if($b_key == 0){
+                            $query->where('brand_id', $b_value->id);
+                        }else{
+                            $query->orWhere('brand_id', $b_value->id);
+                        }
+
+                        if ($item) {
+                            $query->where('name', 'LIKE', '%'.$item.'%');
+                        }
+                    }
+                    
+                    
+                }
+                // dd($query);
+            }
+        }
+
+        ////////////////////////End Brand///////////////////
+
+        if ($item) {
+            $query->where('name', 'LIKE', '%'.$item.'%');
+        }
+
+        ///////////////////////End Item////////////////////
+
+        if($exit){
+            $items = $query->get(); 
+        }else{
+            $items = array(); 
+        }
+        
+        // dd($items);
+
+
+        return response()->json([
+            "status" => "ok",
+            "totalResults" => count($items), 
+            "items" => ItemResource::collection($items)
+        ]);
+
+    }
+
     public function search(Request $request)
     {
         $items = array();
-        $sid = $request->get('sid');
+        $sid = $request->get('subcategory');
         $bid = $request->get('bid');
         $name = $request->get('name');
         if ($sid && $bid){
@@ -153,8 +278,10 @@ class ItemController extends Controller
             }
             
         }
-
-        // return new ItemResource($items);
-        return $items;
+        return response()->json([
+            "status" => "ok",
+            "totalResults" => count($items), 
+            "items" => ItemResource::collection($items)
+        ]);
     }
 }

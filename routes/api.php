@@ -31,6 +31,8 @@ Route::get('filter_item/{sid}/{bid}','Api\ItemController@filter')->name('filter_
 
 Route::get('search','Api\ItemController@search')->name('search'); // to filter struct custom function
 
+Route::get('search_by_name','Api\ItemController@search_by_name')->name('search_by_name'); // search by subcategory name, brand name and item name(multiple search support==> eg: http://localhost:8000/api/search_by_name?brand=Ra&subcategory=Leath&item=Mad), (eg: http://localhost:8000/api/search_by_name?brand=Ra&item=Mad)
+
 
 // make:controller Api\BrandController --api --model=Brand
 
