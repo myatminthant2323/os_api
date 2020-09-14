@@ -22,12 +22,16 @@ class ItemResource extends JsonResource
     {
         // return parent::toArray($request);
         return [
+        "item_id" => $this->id,
         "item_codeno" => $this->codeno,
         "item_name" => $this->name,
         "item_price" => $this->price,
+        'qty' => $this->whenPivotLoaded('order_detail', function () {
+                return $this->pivot->qty;
+            }),
+        "item_photo" => url($this->photo),
         "item_discount" => $this->discount,
         "item_description" => $this->description,
-
         "subcategory" => new SubcategoryResource(Subcategory::find($this->subcategory_id)),
         "brand" => new BrandResource(Brand::find($this->brand_id)),
 

@@ -18,16 +18,23 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::prefix('v1')->group(function () {
 
-Route::apiresource('brands','Api\BrandController'); 
-Route::apiresource('categories','Api\CategoryController');
-Route::apiresource('subcategories','Api\SubcategoryController');
-Route::apiresource('items','Api\ItemController');
+	Route::apiresource('brands','Api\BrandController'); 
 
-Route::apiresource('users','Api\UserController');
+	Route::apiresource('categories','Api\CategoryController');
 
+	Route::apiresource('subcategories','Api\SubcategoryController');
 
-Route::get('filter_item/{sid}/{bid}','Api\ItemController@filter')->name('filter_item');
+	Route::apiresource('items','Api\ItemController');
+
+	Route::apiresource('orders','Api\OrderController');
+
+	Route::apiresource('users','Api\UserController');
+
+	Route::post('register','Api\AuthController@register')->name('register');
+
+	Route::get('filter_item/{sid}/{bid}','Api\ItemController@filter')->name('filter_item');
 
 Route::get('search','Api\ItemController@search')->name('search'); // to filter struct custom function
 
@@ -40,3 +47,4 @@ Route::get('search_by_name','Api\ItemController@search_by_name')->name('search_b
 // --model=Brand (no need to use filter by id)
 
 // localhost:8000/api/brands
+});

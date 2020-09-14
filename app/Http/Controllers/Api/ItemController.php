@@ -15,7 +15,7 @@ class ItemController extends Controller
 
 	public function __construct($value='') // authentication
 	{
-		$this->middleware('auth:api')->except('index','filter','search','search_by_name'); // for api use ('auth:api')
+		$this->middleware('auth:api')->except('index','filter','search','search_by_name','show'); // for api use ('auth:api')
 	}
     /**
      * Display a listing of the resource.
@@ -25,7 +25,7 @@ class ItemController extends Controller
     public function index()
     {
         $items = Item::all();
-        dd($items);
+        // dd($items);
         // return $items;
         return response()->json([
             "status" => "ok",
